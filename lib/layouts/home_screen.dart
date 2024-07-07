@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:namerapp/modules/favorites/favorite_screen.dart';
 import 'package:namerapp/shared/styles/app_styles.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -29,22 +30,32 @@ class HomeScreen extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Color(0xffFBFBFB).withOpacity(0.7),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(6.0),
-                        topRight: Radius.circular(6.0),
-                        bottomLeft: Radius.circular(0.0),
-                        bottomRight: Radius.circular(0.0),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FavoriteScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xffFBFBFB).withOpacity(0.7),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(6.0),
+                          topRight: Radius.circular(6.0),
+                          bottomLeft: Radius.circular(0.0),
+                          bottomRight: Radius.circular(0.0),
+                        ),
                       ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Click Here To View Favorite Quotes',
-                        textAlign: TextAlign.justify,
-                        style: AppStyles.styleRegular26,
+                      child: Center(
+                        child: Text(
+                          'Click Here To View Favorite Quotes',
+                          textAlign: TextAlign.justify,
+                          style: AppStyles.styleRegular26,
+                        ),
                       ),
                     ),
                   ),
