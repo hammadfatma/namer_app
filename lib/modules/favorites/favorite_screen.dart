@@ -1,10 +1,15 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:namerapp/layouts/home_screen.dart';
+import 'package:namerapp/models/quote.dart';
+import 'package:namerapp/shared/cubit/quote_cubit.dart';
 import 'package:namerapp/shared/styles/app_styles.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  const FavoriteScreen({super.key});
-
+  const FavoriteScreen(
+      {super.key, required this.favoritesList, required this.cubit});
+  final List<Quote> favoritesList;
+  final QuoteCubit cubit;
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
@@ -104,85 +109,137 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               SizedBox(
                 height: 10.0,
               ),
-              Container(
-                padding: EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: Color(0xffFBFBFB),
-                  borderRadius: BorderRadius.circular(6.0),
-                  border: Border(
-                    top: BorderSide(color: Color(0xff8249B5), width: 2),
-                    right: BorderSide(color: Color(0xff8249B5), width: 2),
-                    bottom: BorderSide(color: Color(0xff8249B5), width: 2),
-                    left: BorderSide(color: Color(0xff8249B5), width: 2),
-                  ),
-                ),
-                child: Center(
+              ConditionalBuilder(
+                condition: widget.favoritesList.isNotEmpty,
+                builder: (context) {
+                  return Expanded(
+                    child: ListView.separated(
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(
+                            color: Color(0xffFBFBFB),
+                            borderRadius: BorderRadius.circular(6.0),
+                            border: Border(
+                              top: BorderSide(
+                                  color: Color(0xff8249B5), width: 2),
+                              right: BorderSide(
+                                  color: Color(0xff8249B5), width: 2),
+                              bottom: BorderSide(
+                                  color: Color(0xff8249B5), width: 2),
+                              left: BorderSide(
+                                  color: Color(0xff8249B5), width: 2),
+                            ),
+                          ),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  '“${widget.favoritesList[index].content}”',
+                                  textAlign: TextAlign.justify,
+                                  style: AppStyles.styleRegular26,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                    Text(
+                                      '${widget.favoritesList[index].author}',
+                                      style: AppStyles.styleRegular22.copyWith(
+                                        color:
+                                            Color(0xff323232).withOpacity(0.7),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    widget.cubit.deleteData(
+                                        id: widget.favoritesList[index].id!);
+                                    setState(() {
+                                      widget.favoritesList.removeAt(index);
+                                    });
+                                    print(
+                                        "length: ${widget.favoritesList.length}");
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 12.0, horizontal: 50.0),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffFBFBFB),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(0.0),
+                                        topRight: Radius.circular(0.0),
+                                        bottomLeft: Radius.circular(6.0),
+                                        bottomRight: Radius.circular(6.0),
+                                      ),
+                                      border: Border(
+                                        top: BorderSide(
+                                            color: Color(0xff8249B5), width: 2),
+                                        right: BorderSide(
+                                            color: Color(0xff8249B5), width: 2),
+                                        bottom: BorderSide(
+                                            color: Color(0xff8249B5), width: 2),
+                                        left: BorderSide(
+                                            color: Color(0xff8249B5), width: 2),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.favorite_border_outlined,
+                                            size: 30,
+                                            color: Color(0xff8249B5),
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text(
+                                            'Remove From Favorite',
+                                            textAlign: TextAlign.justify,
+                                            style: AppStyles.styleRegular22
+                                                .copyWith(
+                                              color: Color(0xff8249B5),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 10,
+                      ),
+                      itemCount: widget.favoritesList.length,
+                    ),
+                  );
+                },
+                fallback: (context) => Center(
                   child: Column(
                     children: [
                       Text(
-                        '“All I required to be happy was friendship and people I could admire.”',
-                        textAlign: TextAlign.justify,
+                        'Oops!',
                         style: AppStyles.styleRegular26,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: SizedBox(),
-                          ),
-                          Text(
-                            'Christian Dior',
-                            style: AppStyles.styleRegular22.copyWith(
-                              color: Color(0xff323232).withOpacity(0.7),
-                            ),
-                          ),
-                        ],
-                      ),
                       SizedBox(
-                        height: 20,
+                        height: 10.0,
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 50.0),
-                        decoration: BoxDecoration(
-                          color: Color(0xffFBFBFB),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(0.0),
-                            topRight: Radius.circular(0.0),
-                            bottomLeft: Radius.circular(6.0),
-                            bottomRight: Radius.circular(6.0),
-                          ),
-                          border: Border(
-                            top: BorderSide(color: Color(0xff8249B5), width: 2),
-                            right:
-                                BorderSide(color: Color(0xff8249B5), width: 2),
-                            bottom:
-                                BorderSide(color: Color(0xff8249B5), width: 2),
-                            left:
-                                BorderSide(color: Color(0xff8249B5), width: 2),
-                          ),
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.favorite_border_outlined,
-                                size: 30,
-                                color: Color(0xff8249B5),
-                              ),
-                              SizedBox(
-                                width: 4,
-                              ),
-                              Text(
-                                'Remove From Favorite',
-                                textAlign: TextAlign.justify,
-                                style: AppStyles.styleRegular22.copyWith(
-                                  color: Color(0xff8249B5),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      Text(
+                        'No items found',
+                        style: AppStyles.styleRegular22,
                       ),
                     ],
                   ),

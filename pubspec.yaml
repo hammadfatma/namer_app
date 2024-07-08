@@ -37,6 +37,7 @@ dependencies:
   dio: ^5.5.0+1
   flutter_bloc: ^8.1.6
   conditional_builder_null_safety: ^0.0.6
+  sqflite: ^2.3.2
 
 dev_dependencies:
   flutter_test:
