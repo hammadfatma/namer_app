@@ -16,6 +16,24 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
   var searchController = TextEditingController();
+  FocusNode _focusNode = FocusNode();
+  List<Quote> searchList = [];
+  @override
+  void initState() {
+    super.initState();
+    searchList = widget.favoritesList;
+    _focusNode.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -84,18 +102,37 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   color: Color(0xffFBFBFB),
                 ),
                 child: TextField(
+                  onChanged: (value) {
+                    List<Quote> result = [];
+                    if (value.isEmpty) {
+                      result = widget.favoritesList;
+                    } else {
+                      result = widget.favoritesList
+                          .where((element) => element.content
+                              .toString()
+                              .toLowerCase()
+                              .contains(value.toLowerCase()))
+                          .toList();
+                    }
+                    setState(() {
+                      searchList = result;
+                    });
+                  },
                   controller: searchController,
+                  focusNode: _focusNode,
                   decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        searchController.clear();
-                      },
-                      icon: Icon(
-                        Icons.cancel_outlined,
-                        size: 24,
-                        color: Color(0xff808194),
-                      ),
-                    ),
+                    suffixIcon: _focusNode.hasFocus
+                        ? IconButton(
+                            onPressed: () {
+                              searchController.clear();
+                            },
+                            icon: Icon(
+                              Icons.cancel_outlined,
+                              size: 24,
+                              color: Color(0xff808194),
+                            ),
+                          )
+                        : null,
                     hintText: 'Type Something Here To Search..',
                     hintStyle: AppStyles.styleRegular22.copyWith(
                       color: Color(0xff323232).withOpacity(0.7),
@@ -110,7 +147,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 height: 10.0,
               ),
               ConditionalBuilder(
-                condition: widget.favoritesList.isNotEmpty,
+                condition: searchList.isNotEmpty,
                 builder: (context) {
                   return Expanded(
                     child: ListView.separated(
@@ -136,7 +173,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             child: Column(
                               children: [
                                 Text(
-                                  '“${widget.favoritesList[index].content}”',
+                                  '“${searchList[index].content}”',
                                   textAlign: TextAlign.justify,
                                   style: AppStyles.styleRegular26,
                                 ),
@@ -148,7 +185,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                       child: SizedBox(),
                                     ),
                                     Text(
-                                      '${widget.favoritesList[index].author}',
+                                      '${searchList[index].author}',
                                       style: AppStyles.styleRegular22.copyWith(
                                         color:
                                             Color(0xff323232).withOpacity(0.7),
@@ -161,13 +198,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    widget.cubit.deleteData(
-                                        id: widget.favoritesList[index].id!);
+                                    widget.cubit
+                                        .deleteData(id: searchList[index].id!);
                                     setState(() {
-                                      widget.favoritesList.removeAt(index);
+                                      searchList.removeAt(index);
                                     });
-                                    print(
-                                        "length: ${widget.favoritesList.length}");
+                                    print("length: ${searchList.length}");
                                   },
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -223,7 +259,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       separatorBuilder: (context, index) => SizedBox(
                         height: 10,
                       ),
-                      itemCount: widget.favoritesList.length,
+                      itemCount: searchList.length,
                     ),
                   );
                 },
